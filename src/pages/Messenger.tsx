@@ -321,9 +321,9 @@ export default function Messenger() {
           <div className="h-28" />
         </div>
 
-        {/* Bottom nav */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-foreground/10 bg-background/50 pb-8 pt-3 backdrop-blur-xl">
-          <div className="flex items-center justify-around">
+        {/* Floating pill nav */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
+          <div className="flex items-center gap-1 rounded-full border border-foreground/20 bg-foreground/10 p-1.5 backdrop-blur-xl shadow-2xl">
             {[
               { id: "chats", icon: "MessageCircle", label: "Чаты", badge: totalUnread },
               { id: "calls", icon: "Phone", label: "Звонки" },
@@ -333,17 +333,18 @@ export default function Messenger() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`group relative flex flex-col items-center gap-1 px-5 transition-all duration-300 ${
-                  activeTab === tab.id ? "text-foreground" : "text-foreground/30 hover:text-foreground/60"
+                className={`group relative flex items-center gap-2 rounded-full px-4 py-2 transition-all duration-300 ${
+                  activeTab === tab.id
+                    ? "bg-foreground/15 text-foreground"
+                    : "text-foreground/40 hover:text-foreground/70"
                 }`}
               >
-                <Icon name={tab.icon} size={22} />
-                <span className="font-mono text-[9px] uppercase tracking-wider">{tab.label}</span>
+                <Icon name={tab.icon} size={18} />
                 {activeTab === tab.id && (
-                  <div className="absolute -top-3 left-1/2 h-px w-8 -translate-x-1/2 bg-foreground/60" />
+                  <span className="font-mono text-[11px] text-foreground/80">{tab.label}</span>
                 )}
                 {tab.badge && tab.badge > 0 && (
-                  <div className="absolute right-3 top-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-1">
+                  <div className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1">
                     <span className="font-sans text-[8px] font-bold text-primary-foreground">{tab.badge > 99 ? "99+" : tab.badge}</span>
                   </div>
                 )}
