@@ -149,6 +149,9 @@ function ShaderBg() {
 }
 
 export default function Messenger() {
+  const [authScreen, setAuthScreen] = useState<"welcome" | "phone" | "code" | null>("welcome")
+  const [phone, setPhone] = useState("")
+  const [code, setCode] = useState("")
   const [activeTab, setActiveTab] = useState<"chats" | "calls" | "contacts" | "settings">("chats")
   const [searchQuery, setSearchQuery] = useState("")
   const [activeStory, setActiveStory] = useState<number | null>(null)
@@ -361,7 +364,226 @@ export default function Messenger() {
           />
         )}
       </div>
+
+      {/* Auth overlay — поверх основного экрана */}
+      {authScreen !== null && (
+        <AuthOverlay
+          screen={authScreen}
+          phone={phone}
+          setPhone={setPhone}
+          code={code}
+          setCode={setCode}
+          onNext={() => {
+            if (authScreen === "welcome") setAuthScreen("phone")
+            else if (authScreen === "phone") setAuthScreen("code")
+            else setAuthScreen(null)
+          }}
+          onBack={() => {
+            if (authScreen === "phone") setAuthScreen("welcome")
+            else if (authScreen === "code") setAuthScreen("phone")
+          }}
+        />
+      )}
     </main>
+  )
+}
+
+function AuthOverlay({
+  screen,
+  phone,
+  setPhone,
+  code,
+  setCode,
+  onNext,
+  onBack,
+}: {
+  screen: "welcome" | "phone" | "code"
+  phone: string
+  setPhone: (v: string) => void
+  code: string
+  setCode: (v: string) => void
+  onNext: () => void
+  onBack: () => void
+}) {
+  const digits = code.split("").concat(Array(5).fill("")).slice(0, 5)
+
+  return (
+    <div className="absolute inset-0 z-40 flex flex-col bg-background">
+      <GrainOverlay />
+      <ShaderBg />
+
+      <div className="relative z-10 flex h-full flex-col">
+        {/* Welcome screen */}
+        {screen === "welcome" && (
+          <div className="flex h-full flex-col justify-between px-6 pb-16 pt-24">
+            {/* Logo */}
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
+                <span className="font-sans text-base font-bold text-primary-foreground">M</span>
+              </div>
+              <span className="font-sans text-xl font-semibold tracking-tight text-foreground">Mesh</span>
+            </div>
+
+            {/* Hero */}
+            <div className="max-w-xs">
+              <div className="mb-4 inline-block animate-in fade-in slide-in-from-bottom-4 rounded-full border border-foreground/20 bg-foreground/10 px-4 py-1.5 backdrop-blur-md duration-700">
+                <p className="font-mono text-xs text-foreground/80">Мессенджер нового поколения</p>
+              </div>
+              <h1 className="mb-5 animate-in fade-in slide-in-from-bottom-8 font-sans text-5xl font-light leading-[1.1] tracking-tight text-foreground duration-1000">
+                Общайся<br />без<br /><span className="text-foreground/35">границ</span>
+              </h1>
+              <p className="mb-10 animate-in fade-in slide-in-from-bottom-4 font-sans text-sm font-light leading-relaxed text-foreground/60 duration-1000 delay-200">
+                Весь функционал — чаты, звонки, каналы — с уникальным дизайном и сквозным шифрованием.
+              </p>
+              <div className="flex animate-in fade-in slide-in-from-bottom-4 flex-col gap-3 duration-1000 delay-300">
+                <button
+                  onClick={onNext}
+                  className="flex w-full items-center justify-between rounded-full bg-foreground/90 px-6 py-3.5 font-sans text-sm font-medium text-background transition-all hover:bg-foreground hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span>Войти по номеру телефона</span>
+                  <Icon name="ArrowRight" size={16} />
+                </button>
+                <button className="flex w-full items-center justify-center gap-2 rounded-full border border-foreground/15 bg-foreground/5 px-6 py-3.5 font-sans text-sm font-light text-foreground/60 backdrop-blur-md transition-all hover:bg-foreground/10">
+                  <Icon name="QrCode" size={15} />
+                  <span>Войти через QR-код</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <p className="animate-in fade-in duration-1000 delay-500 font-mono text-[10px] text-foreground/25">
+              Продолжая, вы принимаете{" "}
+              <span className="border-b border-foreground/20 text-foreground/40 cursor-pointer">условия использования</span>
+            </p>
+          </div>
+        )}
+
+        {/* Phone screen */}
+        {screen === "phone" && (
+          <div className="flex h-full flex-col px-6 pt-14">
+            <button
+              onClick={onBack}
+              className="mb-10 flex h-9 w-9 items-center justify-center rounded-full border border-foreground/10 bg-foreground/5 text-foreground/60 backdrop-blur-md transition-all hover:bg-foreground/10 hover:text-foreground"
+            >
+              <Icon name="ChevronLeft" size={18} />
+            </button>
+
+            <div className="flex flex-1 flex-col justify-between pb-12">
+              <div>
+                <p className="mb-2 font-mono text-xs text-foreground/40">/ шаг 01</p>
+                <h2 className="mb-2 font-sans text-4xl font-light leading-tight tracking-tight text-foreground">
+                  Ваш номер<br />телефона
+                </h2>
+                <p className="mb-10 font-sans text-sm font-light text-foreground/50">
+                  Отправим код подтверждения в SMS
+                </p>
+
+                <div className="mb-3 flex items-center gap-3 rounded-2xl border border-foreground/15 bg-foreground/5 px-4 py-4 backdrop-blur-md transition-all focus-within:border-foreground/30">
+                  <div className="flex items-center gap-2 border-r border-foreground/10 pr-3">
+                    <span className="text-lg">🇷🇺</span>
+                    <span className="font-mono text-sm text-foreground/60">+7</span>
+                  </div>
+                  <input
+                    type="tel"
+                    autoFocus
+                    className="flex-1 bg-transparent font-sans text-base text-foreground placeholder:text-foreground/30 focus:outline-none"
+                    placeholder="999 000 00 00"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  />
+                  {phone.length > 0 && (
+                    <button onClick={() => setPhone("")}>
+                      <Icon name="X" size={15} className="text-foreground/30" />
+                    </button>
+                  )}
+                </div>
+                <p className="font-mono text-[10px] text-foreground/30">Формат: 999 000 00 00</p>
+              </div>
+
+              <button
+                onClick={onNext}
+                disabled={phone.length < 10}
+                className="flex w-full items-center justify-between rounded-full bg-foreground/90 px-6 py-4 font-sans text-sm font-medium text-background transition-all hover:bg-foreground hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none"
+              >
+                <span>Получить код</span>
+                <Icon name="ArrowRight" size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Code screen */}
+        {screen === "code" && (
+          <div className="flex h-full flex-col px-6 pt-14">
+            <button
+              onClick={onBack}
+              className="mb-10 flex h-9 w-9 items-center justify-center rounded-full border border-foreground/10 bg-foreground/5 text-foreground/60 backdrop-blur-md transition-all hover:bg-foreground/10 hover:text-foreground"
+            >
+              <Icon name="ChevronLeft" size={18} />
+            </button>
+
+            <div className="flex flex-1 flex-col justify-between pb-12">
+              <div>
+                <p className="mb-2 font-mono text-xs text-foreground/40">/ шаг 02</p>
+                <h2 className="mb-2 font-sans text-4xl font-light leading-tight tracking-tight text-foreground">
+                  Код из<br />SMS
+                </h2>
+                <p className="mb-10 font-sans text-sm font-light text-foreground/50">
+                  Отправлен на +7 {phone.slice(0,3)} {phone.slice(3,6)} {phone.slice(6,8)} {phone.slice(8,10)}
+                </p>
+
+                <div className="relative mb-6">
+                  <div className="flex gap-2">
+                    {digits.map((d, i) => (
+                      <div
+                        key={i}
+                        className={`flex h-14 flex-1 items-center justify-center rounded-2xl border backdrop-blur-md transition-all duration-200 ${
+                          i === code.length
+                            ? "border-foreground/40 bg-foreground/10"
+                            : d
+                            ? "border-foreground/20 bg-foreground/5"
+                            : "border-foreground/10 bg-foreground/5"
+                        }`}
+                      >
+                        <span className="font-sans text-xl font-light text-foreground">{d}</span>
+                        {i === code.length && (
+                          <span className="ml-0.5 inline-block h-5 w-px animate-pulse bg-foreground/50" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <input
+                    type="number"
+                    autoFocus
+                    className="absolute inset-0 opacity-0 cursor-default"
+                    value={code}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/\D/g, "").slice(0, 5)
+                      setCode(v)
+                      if (v.length === 5) setTimeout(onNext, 300)
+                    }}
+                  />
+                </div>
+
+                <button className="flex items-center gap-2 font-mono text-[10px] text-foreground/35 transition-colors hover:text-foreground/60">
+                  <Icon name="RefreshCw" size={11} />
+                  Отправить повторно через 59 с
+                </button>
+              </div>
+
+              <button
+                onClick={onNext}
+                disabled={code.length < 5}
+                className="flex w-full items-center justify-between rounded-full bg-foreground/90 px-6 py-4 font-sans text-sm font-medium text-background transition-all hover:bg-foreground hover:scale-[1.02] active:scale-[0.98] disabled:opacity-25 disabled:pointer-events-none"
+              >
+                <span>Войти в Mesh</span>
+                <Icon name="ArrowRight" size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
