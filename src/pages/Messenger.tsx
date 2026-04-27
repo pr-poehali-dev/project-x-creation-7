@@ -1,13 +1,16 @@
 import { useState } from "react"
 import Icon from "@/components/ui/icon"
+import { GrainOverlay } from "@/components/grain-overlay"
+import { CustomCursor } from "@/components/custom-cursor"
+import { Shader, ChromaFlow, Swirl } from "shaders/react"
 
 const STORIES = [
-  { id: 1, name: "Моя история", avatar: "М", color: "from-blue-500 to-purple-600", isOwn: true, seen: false },
+  { id: 1, name: "Моя история", avatar: "М", color: "from-primary to-accent", isOwn: true, seen: false },
   { id: 2, name: "Алина", avatar: "А", color: "from-pink-500 to-rose-500", seen: false },
-  { id: 3, name: "Денис", avatar: "Д", color: "from-cyan-400 to-blue-500", seen: false },
+  { id: 3, name: "Денис", avatar: "Д", color: "from-cyan-400 to-primary", seen: false },
   { id: 4, name: "Команда", avatar: "К", color: "from-green-400 to-emerald-500", seen: true },
   { id: 5, name: "Максим", avatar: "М", color: "from-orange-400 to-amber-500", seen: true },
-  { id: 6, name: "Юля", avatar: "Ю", color: "from-violet-500 to-purple-600", seen: false },
+  { id: 6, name: "Юля", avatar: "Ю", color: "from-accent to-purple-700", seen: false },
   { id: 7, name: "Работа", avatar: "Р", color: "from-sky-400 to-cyan-500", seen: true },
 ]
 
@@ -27,7 +30,7 @@ const CHATS = [
     id: 2,
     name: "Команда Mesh",
     avatar: "М",
-    color: "from-blue-500 to-cyan-400",
+    color: "from-primary to-cyan-400",
     lastMessage: "Денис: Новый билд готов к тестированию!",
     time: "3 мин",
     unread: 14,
@@ -39,7 +42,7 @@ const CHATS = [
     id: 3,
     name: "Денис Волков",
     avatar: "Д",
-    color: "from-cyan-400 to-blue-500",
+    color: "from-cyan-400 to-primary",
     lastMessage: "Ты смотрел новый фильм?",
     time: "15 мин",
     unread: 0,
@@ -59,7 +62,7 @@ const CHATS = [
     id: 5,
     name: "Разработка iOS",
     avatar: "iOS",
-    color: "from-gray-600 to-gray-800",
+    color: "from-muted to-secondary",
     lastMessage: "Ты: Pull request открыт, смотрите",
     time: "2 ч",
     unread: 0,
@@ -70,7 +73,7 @@ const CHATS = [
     id: 6,
     name: "Юлия Петрова",
     avatar: "Ю",
-    color: "from-violet-500 to-purple-600",
+    color: "from-accent to-purple-700",
     lastMessage: "Спасибо большое! ❤️",
     time: "вчера",
     unread: 0,
@@ -80,7 +83,7 @@ const CHATS = [
     id: 7,
     name: "Новости Tech",
     avatar: "📡",
-    color: "from-sky-500 to-blue-600",
+    color: "from-sky-500 to-primary",
     lastMessage: "Google представила Android 16 с новым...",
     time: "вчера",
     unread: 3,
@@ -110,6 +113,41 @@ const CHATS = [
   },
 ]
 
+function ShaderBackground() {
+  return (
+    <div className="fixed inset-0 z-0" style={{ contain: "strict" }}>
+      <Shader className="h-full w-full">
+        <Swirl
+          colorA="#2AABEE"
+          colorB="#7B61FF"
+          speed={0.4}
+          detail={0.9}
+          blend={60}
+          coarseX={35}
+          coarseY={35}
+          mediumX={45}
+          mediumY={45}
+          fineX={30}
+          fineY={30}
+        />
+        <ChromaFlow
+          baseColor="#2AABEE"
+          upColor="#2AABEE"
+          downColor="#0a0a0a"
+          leftColor="#7B61FF"
+          rightColor="#5B8DEF"
+          intensity={0.7}
+          radius={1.6}
+          momentum={20}
+          maskType="alpha"
+          opacity={0.92}
+        />
+      </Shader>
+      <div className="absolute inset-0 bg-background/80 backdrop-blur-[2px]" />
+    </div>
+  )
+}
+
 export default function Messenger() {
   const [activeTab, setActiveTab] = useState<"chats" | "calls" | "contacts" | "settings">("chats")
   const [searchQuery, setSearchQuery] = useState("")
@@ -130,199 +168,202 @@ export default function Messenger() {
   }
 
   return (
-    <div className="flex h-screen w-full flex-col bg-[#0e0e0e] text-white overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-3 bg-[#0e0e0e]">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#2AABEE] to-[#7B61FF]">
-            <span className="text-sm font-bold text-white">M</span>
+    <main className="relative h-screen w-full overflow-hidden bg-background">
+      <CustomCursor />
+      <GrainOverlay />
+      <ShaderBackground />
+
+      <div className="relative z-10 flex h-screen flex-col text-foreground overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 pt-12 pb-3 bg-background/40 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent">
+              <span className="font-sans text-sm font-bold text-primary-foreground">M</span>
+            </div>
+            <span className="font-sans text-xl font-semibold tracking-tight text-foreground">Mesh</span>
           </div>
-          <span className="text-xl font-semibold tracking-tight">Mesh</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 transition-colors hover:bg-white/15">
-            <Icon name="Search" size={18} />
-          </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 transition-colors hover:bg-white/15">
-            <Icon name="Edit3" size={18} />
-          </button>
-        </div>
-      </div>
-
-      {/* Search bar */}
-      <div className="px-4 pb-3">
-        <div className="flex items-center gap-3 rounded-2xl bg-white/8 px-4 py-2.5">
-          <Icon name="Search" size={16} className="text-white/40" />
-          <input
-            className="flex-1 bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
-            placeholder="Поиск"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery("")}>
-              <Icon name="X" size={14} className="text-white/40" />
+          <div className="flex items-center gap-2">
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/8 transition-colors hover:bg-foreground/15">
+              <Icon name="Search" size={18} />
             </button>
-          )}
+            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-foreground/8 transition-colors hover:bg-foreground/15">
+              <Icon name="Edit3" size={18} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Stories */}
-      {!searchQuery && (
-        <div className="flex gap-3 overflow-x-auto px-4 pb-4 scrollbar-none" style={{ scrollbarWidth: "none" }}>
-          {STORIES.map((story) => (
-            <button
-              key={story.id}
-              onClick={() => setActiveStory(story.id)}
-              className="flex shrink-0 flex-col items-center gap-1.5"
-            >
-              <div className="relative">
-                <div
-                  className={`h-[62px] w-[62px] rounded-[22px] p-[2.5px] ${
-                    story.seen ? "bg-white/15" : `bg-gradient-to-br ${story.color}`
-                  }`}
-                >
-                  <div className="flex h-full w-full items-center justify-center rounded-[19px] bg-[#1a1a1a] text-lg font-semibold">
-                    {story.isOwn ? (
-                      <div className="relative flex h-full w-full items-center justify-center rounded-[19px] bg-gradient-to-br from-[#2AABEE] to-[#7B61FF]">
-                        <span className="text-base font-bold">М</span>
-                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#2AABEE] border-2 border-[#0e0e0e]">
-                          <Icon name="Plus" size={10} />
+        {/* Search bar */}
+        <div className="px-4 pb-3">
+          <div className="flex items-center gap-3 rounded-2xl bg-foreground/8 px-4 py-2.5 border border-foreground/10">
+            <Icon name="Search" size={16} className="text-foreground/40" />
+            <input
+              className="flex-1 bg-transparent font-sans text-sm text-foreground placeholder:text-foreground/40 focus:outline-none"
+              placeholder="Поиск"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")}>
+                <Icon name="X" size={14} className="text-foreground/40" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Stories */}
+        {!searchQuery && (
+          <div className="flex gap-3 overflow-x-auto px-4 pb-4" style={{ scrollbarWidth: "none" }}>
+            {STORIES.map((story) => (
+              <button
+                key={story.id}
+                onClick={() => setActiveStory(story.id)}
+                className="flex shrink-0 flex-col items-center gap-1.5"
+              >
+                <div className="relative">
+                  <div
+                    className={`h-[62px] w-[62px] rounded-[22px] p-[2.5px] ${
+                      story.seen ? "bg-foreground/15" : `bg-gradient-to-br ${story.color}`
+                    }`}
+                  >
+                    <div className="flex h-full w-full items-center justify-center rounded-[19px] bg-card font-sans text-lg font-semibold">
+                      {story.isOwn ? (
+                        <div className="relative flex h-full w-full items-center justify-center rounded-[19px] bg-gradient-to-br from-primary to-accent">
+                          <span className="text-base font-bold text-primary-foreground">М</span>
+                          <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary border-2 border-card">
+                            <Icon name="Plus" size={10} />
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <span className="text-base">{story.avatar}</span>
-                    )}
+                      ) : (
+                        <span className="text-base text-foreground">{story.avatar}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
+                <span className="max-w-[62px] truncate text-center font-sans text-[10px] text-foreground/60">
+                  {story.isOwn ? "Моя" : story.name.split(" ")[0]}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Chat list */}
+        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          {!searchQuery && (
+            <div className="px-4 pb-1">
+              <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-foreground/30">Закреплённые</span>
+            </div>
+          )}
+
+          {filteredChats.map((chat, idx) => {
+            const firstUnpinned = !searchQuery && CHATS.findIndex((c) => !c.pinned) === idx
+            return (
+              <div key={chat.id}>
+                {firstUnpinned && (
+                  <div className="px-4 py-1 pt-3">
+                    <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-foreground/30">Все чаты</span>
+                  </div>
+                )}
+                <button
+                  onClick={() => setActiveChat(chat.id)}
+                  className="flex w-full items-center gap-3 px-4 py-3 transition-colors hover:bg-foreground/5 active:bg-foreground/8"
+                >
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
+                    <div
+                      className={`flex h-[52px] w-[52px] items-center justify-center rounded-[18px] bg-gradient-to-br ${chat.color} font-sans text-sm font-semibold text-white`}
+                    >
+                      {chat.avatar}
+                    </div>
+                    {chat.online && (
+                      <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-400 border-2 border-background" />
+                    )}
+                    {chat.isChannel && (
+                      <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary border-2 border-background">
+                        <Icon name="Radio" size={8} />
+                      </div>
+                    )}
+                    {chat.isGroup && !chat.isChannel && (
+                      <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-accent border-2 border-background">
+                        <Icon name="Users" size={8} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-left">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 overflow-hidden">
+                        {chat.pinned && <Icon name="Pin" size={12} className="shrink-0 text-foreground/30 rotate-45" />}
+                        <span className="truncate font-sans text-[15px] font-medium leading-tight text-foreground">{chat.name}</span>
+                      </div>
+                      <span
+                        className={`shrink-0 font-mono text-[11px] ${
+                          chat.unread > 0 ? "text-primary" : "text-foreground/35"
+                        }`}
+                      >
+                        {chat.time}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate font-sans text-[13px] leading-snug text-foreground/50">{chat.lastMessage}</span>
+                      {chat.unread > 0 && (
+                        <div className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5">
+                          <span className="font-sans text-[11px] font-semibold text-primary-foreground">{chat.unread}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </button>
               </div>
-              <span className="max-w-[62px] truncate text-center text-[10px] text-white/70">
-                {story.isOwn ? "Моя" : story.name.split(" ")[0]}
-              </span>
+            )
+          })}
+
+          {filteredChats.length === 0 && (
+            <div className="flex flex-col items-center gap-3 py-20 text-foreground/30">
+              <Icon name="SearchX" size={40} />
+              <span className="font-sans text-sm">Ничего не найдено</span>
+            </div>
+          )}
+
+          <div className="h-24" />
+        </div>
+
+        {/* Bottom nav */}
+        <div className="absolute bottom-0 left-0 right-0 flex items-center justify-around border-t border-foreground/8 bg-background/60 pb-6 pt-3 backdrop-blur-xl">
+          {[
+            { id: "chats", icon: "MessageCircle", label: "Чаты", badge: totalUnread },
+            { id: "calls", icon: "Phone", label: "Звонки" },
+            { id: "contacts", icon: "Users", label: "Контакты" },
+            { id: "settings", icon: "Settings2", label: "Настройки" },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as typeof activeTab)}
+              className={`relative flex flex-col items-center gap-1 px-4 transition-all ${
+                activeTab === tab.id ? "text-primary" : "text-foreground/40"
+              }`}
+            >
+              <Icon name={tab.icon} size={24} />
+              <span className="font-sans text-[10px] font-medium">{tab.label}</span>
+              {tab.badge && tab.badge > 0 && (
+                <div className="absolute -top-0.5 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1">
+                  <span className="font-sans text-[9px] font-bold text-primary-foreground">{tab.badge > 99 ? "99+" : tab.badge}</span>
+                </div>
+              )}
             </button>
           ))}
         </div>
-      )}
 
-      {/* Chat list */}
-      <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-        {/* Pinned label */}
-        {!searchQuery && (
-          <div className="px-4 pb-1">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-white/30">Закреплённые</span>
-          </div>
+        {/* Story viewer overlay */}
+        {activeStory !== null && (
+          <StoryViewer
+            story={STORIES.find((s) => s.id === activeStory)!}
+            onClose={() => setActiveStory(null)}
+          />
         )}
-
-        {filteredChats.map((chat, idx) => {
-          const isPinnedSection = chat.pinned && !searchQuery
-          const firstUnpinned = !searchQuery && CHATS.findIndex((c) => !c.pinned) === idx
-
-          return (
-            <div key={chat.id}>
-              {firstUnpinned && (
-                <div className="px-4 py-1">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-white/30">Все чаты</span>
-                </div>
-              )}
-              <button
-                onClick={() => setActiveChat(chat.id)}
-                className="flex w-full items-center gap-3 px-4 py-3 transition-colors hover:bg-white/5 active:bg-white/8"
-              >
-                {/* Avatar */}
-                <div className="relative shrink-0">
-                  <div
-                    className={`flex h-[52px] w-[52px] items-center justify-center rounded-[18px] bg-gradient-to-br ${chat.color} text-sm font-semibold`}
-                  >
-                    {chat.avatar}
-                  </div>
-                  {chat.online && (
-                    <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-green-400 border-2 border-[#0e0e0e]" />
-                  )}
-                  {chat.isChannel && (
-                    <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#2AABEE] border-2 border-[#0e0e0e]">
-                      <Icon name="Radio" size={8} />
-                    </div>
-                  )}
-                  {chat.isGroup && !chat.isChannel && (
-                    <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#7B61FF] border-2 border-[#0e0e0e]">
-                      <Icon name="Users" size={8} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex flex-1 flex-col gap-0.5 overflow-hidden text-left">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 overflow-hidden">
-                      {chat.pinned && <Icon name="Pin" size={12} className="shrink-0 text-white/30 rotate-45" />}
-                      <span className="truncate text-[15px] font-medium leading-tight">{chat.name}</span>
-                    </div>
-                    <span
-                      className={`shrink-0 text-[12px] ${
-                        chat.unread > 0 ? "text-[#2AABEE]" : "text-white/35"
-                      }`}
-                    >
-                      {chat.time}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="truncate text-[13px] leading-snug text-white/50">{chat.lastMessage}</span>
-                    {chat.unread > 0 && (
-                      <div className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-[#2AABEE] px-1.5">
-                        <span className="text-[11px] font-semibold text-white">{chat.unread}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </button>
-            </div>
-          )
-        })}
-
-        {filteredChats.length === 0 && (
-          <div className="flex flex-col items-center gap-3 py-20 text-white/30">
-            <Icon name="SearchX" size={40} />
-            <span className="text-sm">Ничего не найдено</span>
-          </div>
-        )}
-
-        <div className="h-24" />
       </div>
-
-      {/* Bottom nav */}
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-around border-t border-white/8 bg-[#0e0e0e]/95 pb-6 pt-3 backdrop-blur-xl">
-        {[
-          { id: "chats", icon: "MessageCircle", label: "Чаты", badge: totalUnread },
-          { id: "calls", icon: "Phone", label: "Звонки" },
-          { id: "contacts", icon: "Users", label: "Контакты" },
-          { id: "settings", icon: "Settings2", label: "Настройки" },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`relative flex flex-col items-center gap-1 px-4 transition-all ${
-              activeTab === tab.id ? "text-[#2AABEE]" : "text-white/40"
-            }`}
-          >
-            <Icon name={tab.icon} size={24} />
-            <span className="text-[10px] font-medium">{tab.label}</span>
-            {tab.badge && tab.badge > 0 && (
-              <div className="absolute -top-0.5 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#2AABEE] px-1">
-                <span className="text-[9px] font-bold text-white">{tab.badge > 99 ? "99+" : tab.badge}</span>
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {/* Story viewer overlay */}
-      {activeStory !== null && (
-        <StoryViewer
-          story={STORIES.find((s) => s.id === activeStory)!}
-          onClose={() => setActiveStory(null)}
-        />
-      )}
-    </div>
+    </main>
   )
 }
 
@@ -334,16 +375,14 @@ function StoryViewer({
   onClose: () => void
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex flex-col bg-black"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex flex-col bg-background" onClick={onClose}>
+      <GrainOverlay />
       {/* Progress bar */}
-      <div className="flex gap-1 px-3 pt-12">
+      <div className="flex gap-1 px-3 pt-12 relative z-10">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-white/30">
+          <div key={i} className="h-0.5 flex-1 overflow-hidden rounded-full bg-foreground/20">
             <div
-              className="h-full bg-white transition-all duration-[5000ms] ease-linear"
+              className="h-full bg-foreground transition-all duration-[5000ms] ease-linear"
               style={{ width: i === 0 ? "100%" : "0%" }}
             />
           </div>
@@ -351,15 +390,15 @@ function StoryViewer({
       </div>
 
       {/* Story header */}
-      <div className="flex items-center gap-3 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+      <div className="relative z-10 flex items-center gap-3 px-4 py-3" onClick={(e) => e.stopPropagation()}>
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-[14px] bg-gradient-to-br ${story.color} text-sm font-semibold`}
+          className={`flex h-10 w-10 items-center justify-center rounded-[14px] bg-gradient-to-br ${story.color} font-sans text-sm font-semibold text-white`}
         >
           {story.avatar}
         </div>
         <div>
-          <div className="text-sm font-semibold">{story.name}</div>
-          <div className="text-xs text-white/60">только что</div>
+          <div className="font-sans text-sm font-semibold text-foreground">{story.name}</div>
+          <div className="font-mono text-xs text-foreground/60">только что</div>
         </div>
         <button className="ml-auto" onClick={onClose}>
           <Icon name="X" size={22} />
@@ -367,19 +406,17 @@ function StoryViewer({
       </div>
 
       {/* Story content */}
-      <div
-        className={`flex flex-1 flex-col items-center justify-center bg-gradient-to-br ${story.color}`}
-      >
-        <span className="text-8xl font-bold text-white/20">{story.avatar}</span>
+      <div className={`relative flex flex-1 flex-col items-center justify-center bg-gradient-to-br ${story.color}`}>
+        <span className="font-sans text-8xl font-bold text-white/20">{story.avatar}</span>
       </div>
 
       {/* Reply input */}
-      <div className="flex items-center gap-3 p-4 pb-10" onClick={(e) => e.stopPropagation()}>
+      <div className="relative z-10 flex items-center gap-3 p-4 pb-10" onClick={(e) => e.stopPropagation()}>
         <input
-          className="flex-1 rounded-full bg-white/15 px-4 py-2.5 text-sm placeholder:text-white/50 focus:outline-none"
+          className="flex-1 rounded-full bg-foreground/10 px-4 py-2.5 font-sans text-sm text-foreground placeholder:text-foreground/50 focus:outline-none border border-foreground/15"
           placeholder={`Ответить ${story.name.split(" ")[0]}...`}
         />
-        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+        <button className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
           <Icon name="Send" size={18} />
         </button>
       </div>
@@ -407,96 +444,96 @@ function ChatView({
   ]
 
   return (
-    <div className="flex h-screen flex-col bg-[#0e0e0e] text-white">
-      {/* Chat header */}
-      <div className="flex items-center gap-3 border-b border-white/8 px-4 pb-3 pt-12 bg-[#0e0e0e]">
-        <button
-          onClick={onBack}
-          className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/8 transition-colors"
-        >
-          <Icon name="ChevronLeft" size={22} />
-        </button>
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-[14px] bg-gradient-to-br ${chat.color} text-sm font-semibold shrink-0`}
-        >
-          {chat.avatar}
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <div className="truncate text-[15px] font-semibold">{chat.name}</div>
-          <div className="text-[12px] text-white/50">
-            {chat.online ? "в сети" : chat.isGroup ? "4 участника" : "был(а) недавно"}
+    <main className="relative h-screen w-full overflow-hidden bg-background">
+      <CustomCursor />
+      <GrainOverlay />
+      <ShaderBackground />
+
+      <div className="relative z-10 flex h-screen flex-col text-foreground">
+        {/* Chat header */}
+        <div className="flex items-center gap-3 border-b border-foreground/8 px-4 pb-3 pt-12 bg-background/40 backdrop-blur-md">
+          <button
+            onClick={onBack}
+            className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-foreground/8 transition-colors"
+          >
+            <Icon name="ChevronLeft" size={22} />
+          </button>
+          <div
+            className={`flex h-10 w-10 items-center justify-center rounded-[14px] bg-gradient-to-br ${chat.color} font-sans text-sm font-semibold text-white shrink-0`}
+          >
+            {chat.avatar}
           </div>
-        </div>
-        <div className="flex gap-1">
-          <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/8 transition-colors">
-            <Icon name="Phone" size={18} />
-          </button>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/8 transition-colors">
-            <Icon name="MoreVertical" size={18} />
-          </button>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5" style={{ scrollbarWidth: "none" }}>
-        <div className="flex justify-center mb-4">
-          <span className="rounded-full bg-white/8 px-3 py-1 text-[11px] text-white/50">Сегодня</span>
-        </div>
-
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.mine ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[75%] rounded-[18px] px-4 py-2.5 ${
-                msg.mine
-                  ? "rounded-br-[6px] bg-gradient-to-br from-[#2AABEE] to-[#5B8DEF] text-white"
-                  : "rounded-bl-[6px] bg-white/10 text-white"
-              }`}
-            >
-              <p className="text-[14px] leading-relaxed">{msg.text}</p>
-              <div className={`flex items-center gap-1 mt-0.5 ${msg.mine ? "justify-end" : "justify-start"}`}>
-                <span className="text-[10px] opacity-70">{msg.time}</span>
-                {msg.mine && (
-                  <Icon name="CheckCheck" size={12} className={msg.read ? "text-white" : "opacity-50"} />
-                )}
-              </div>
+          <div className="flex-1 overflow-hidden">
+            <div className="truncate font-sans text-[15px] font-semibold text-foreground">{chat.name}</div>
+            <div className="font-mono text-[11px] text-foreground/50">
+              {chat.online ? "в сети" : chat.isGroup ? "4 участника" : "был(а) недавно"}
             </div>
           </div>
-        ))}
-        <div className="h-4" />
-      </div>
+          <div className="flex gap-1">
+            <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-foreground/8 transition-colors">
+              <Icon name="Phone" size={18} />
+            </button>
+            <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-foreground/8 transition-colors">
+              <Icon name="MoreVertical" size={18} />
+            </button>
+          </div>
+        </div>
 
-      {/* Input */}
-      <div className="flex items-end gap-2 border-t border-white/8 px-3 pb-8 pt-3 bg-[#0e0e0e]">
-        <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-white/8 transition-colors">
-          <Icon name="Paperclip" size={20} className="text-white/60" />
-        </button>
-        <div className="flex flex-1 items-end rounded-[22px] bg-white/8 px-4 py-2.5">
-          <textarea
-            rows={1}
-            className="flex-1 resize-none bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
-            placeholder="Сообщение..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            style={{ maxHeight: "120px" }}
-          />
-          <button className="ml-2 shrink-0">
-            <Icon name="Smile" size={20} className="text-white/60" />
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1.5" style={{ scrollbarWidth: "none" }}>
+          <div className="flex justify-center mb-4">
+            <span className="rounded-full bg-foreground/8 px-3 py-1 font-mono text-[11px] text-foreground/50 border border-foreground/10">Сегодня</span>
+          </div>
+
+          {messages.map((msg) => (
+            <div key={msg.id} className={`flex ${msg.mine ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`max-w-[75%] rounded-[18px] px-4 py-2.5 ${
+                  msg.mine
+                    ? "rounded-br-[6px] bg-gradient-to-br from-primary to-accent/80 text-primary-foreground"
+                    : "rounded-bl-[6px] bg-foreground/10 text-foreground border border-foreground/10"
+                }`}
+              >
+                <p className="font-sans text-[14px] leading-relaxed">{msg.text}</p>
+                <div className={`flex items-center gap-1 mt-0.5 ${msg.mine ? "justify-end" : "justify-start"}`}>
+                  <span className="font-mono text-[10px] opacity-60">{msg.time}</span>
+                  {msg.mine && (
+                    <Icon name="CheckCheck" size={12} className={msg.read ? "opacity-90" : "opacity-40"} />
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="h-4" />
+        </div>
+
+        {/* Input */}
+        <div className="flex items-end gap-2 border-t border-foreground/8 px-3 pb-8 pt-3 bg-background/40 backdrop-blur-md">
+          <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full hover:bg-foreground/8 transition-colors">
+            <Icon name="Paperclip" size={20} className="text-foreground/60" />
+          </button>
+          <div className="flex flex-1 items-end rounded-[22px] bg-foreground/8 px-4 py-2.5 border border-foreground/10">
+            <textarea
+              rows={1}
+              className="flex-1 resize-none bg-transparent font-sans text-sm text-foreground placeholder:text-foreground/40 focus:outline-none"
+              placeholder="Сообщение..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              style={{ maxHeight: "120px" }}
+            />
+            <button className="ml-2 shrink-0">
+              <Icon name="Smile" size={20} className="text-foreground/60" />
+            </button>
+          </div>
+          <button className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent/80 transition-all hover:scale-105">
+            {message.trim() ? (
+              <Icon name="Send" size={18} />
+            ) : (
+              <Icon name="Mic" size={18} />
+            )}
           </button>
         </div>
-        <button
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all ${
-            message.trim()
-              ? "bg-gradient-to-br from-[#2AABEE] to-[#5B8DEF]"
-              : "bg-gradient-to-br from-[#2AABEE] to-[#5B8DEF]"
-          }`}
-        >
-          {message.trim() ? (
-            <Icon name="Send" size={18} />
-          ) : (
-            <Icon name="Mic" size={18} />
-          )}
-        </button>
       </div>
-    </div>
+    </main>
   )
 }
