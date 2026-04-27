@@ -175,7 +175,7 @@ export default function Messenger() {
       <div className="relative z-10 flex h-screen flex-col overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-14 pb-4">
+        <div className="flex items-center justify-between px-6 pt-14 pb-4" role="banner">
           <div>
             <p className="font-mono text-xs text-foreground/50">/ мессенджер</p>
             <h1 className="font-sans text-2xl font-light tracking-tight text-foreground">Чаты</h1>
