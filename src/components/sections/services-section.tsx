@@ -15,31 +15,31 @@ export function ServicesSection() {
           }`}
         >
           <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            Услуги
+            Функции
           </h2>
-          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Наши компетенции</p>
+          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Всё что нужно для общения</p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 md:gap-x-16 md:gap-y-12 lg:gap-x-24">
           {[
             {
-              title: "Веб-разработка",
-              description: "Создание современных веб-приложений любой сложности",
+              title: "Файлы без ограничений",
+              description: "Отправляйте документы, фото и видео до 4 ГБ без потери качества",
               direction: "top",
             },
             {
-              title: "UI/UX Дизайн",
-              description: "Проектирование удобных и красивых интерфейсов",
+              title: "Свой дизайн",
+              description: "Уникальные темы, шрифты и цветовые схемы — полная кастомизация интерфейса",
               direction: "right",
             },
             {
-              title: "Мобильные приложения",
-              description: "Кроссплатформенная разработка для iOS и Android",
+              title: "Офлайн-режим",
+              description: "Читайте и пишите сообщения даже без интернета — синхронизация при подключении",
               direction: "left",
             },
             {
-              title: "Консалтинг",
-              description: "Техническая экспертиза и стратегическое планирование",
+              title: "Приватность",
+              description: "Сквозное шифрование, скрытые чаты и автоудаление сообщений по таймеру",
               direction: "bottom",
             },
           ].map((service, i) => (
