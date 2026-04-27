@@ -382,6 +382,7 @@ export default function Messenger() {
             if (authScreen === "phone") setAuthScreen("welcome")
             else if (authScreen === "code") setAuthScreen("phone")
           }}
+          onSkip={() => setAuthScreen(null)}
         />
       )}
     </main>
@@ -396,6 +397,7 @@ function AuthOverlay({
   setCode,
   onNext,
   onBack,
+  onSkip,
 }: {
   screen: "welcome" | "phone" | "code"
   phone: string
@@ -404,6 +406,7 @@ function AuthOverlay({
   setCode: (v: string) => void
   onNext: () => void
   onBack: () => void
+  onSkip: () => void
 }) {
   const digits = code.split("").concat(Array(5).fill("")).slice(0, 5)
 
@@ -446,6 +449,12 @@ function AuthOverlay({
                 <button className="flex w-full items-center justify-center gap-2 rounded-full border border-foreground/15 bg-foreground/5 px-6 py-3.5 font-sans text-sm font-light text-foreground/60 backdrop-blur-md transition-all hover:bg-foreground/10">
                   <Icon name="QrCode" size={15} />
                   <span>Войти через QR-код</span>
+                </button>
+                <button
+                  onClick={onSkip}
+                  className="flex w-full items-center justify-center gap-2 py-2 font-mono text-xs text-foreground/30 transition-colors hover:text-foreground/60"
+                >
+                  Посмотреть демо →
                 </button>
               </div>
             </div>
